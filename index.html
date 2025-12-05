@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Open All Links</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        /* 🔵 Animated background */
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at top, #ffffff 0, #e3f2fd 35%, #1a237e 100%);
+            background-size: 200% 200%;
+            animation: bgMove 14s ease-in-out infinite;
+        }
+
+        @keyframes bgMove {
+            0%   { background-position: 0% 0%; }
+            50%  { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
+        }
+
+        .card {
+            width: 90%;
+            max-width: 720px;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 28px 32px 30px;
+            border-radius: 18px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
+            border: 1px solid rgba(25, 118, 210, 0.15);
+            backdrop-filter: blur(6px);
+            animation: fadeInUp 0.7s ease-out;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 4px;
+            letter-spacing: 0.03em;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #546e7a;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #1e88e5;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+        }
+
+        textarea {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid #cfd8dc;
+            padding: 12px 14px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 180px;
+            outline: none;
+            line-height: 1.4;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+        }
+
+        textarea:focus {
+            border-color: #1e88e5;
+            box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .hint {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #78909c;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 18px;
+            gap: 12px;
+        }
+
+        .count-text {
+            font-size: 13px;
+            color: #455a64;
+        }
+
+        .count-number {
+            font-weight: 700;
+            color: #1e88e5;
+        }
+
+        .btn {
+            padding: 10px 22px;
+            border-radius: 999px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            background: linear-gradient(135deg, #1e88e5, #3949ab);
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(25, 118, 210, 0.45);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+        }
+
+        .btn span.icon {
+            font-size: 16px;
+            transform: translateY(1px);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 14px 26px rgba(25, 118, 210, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 6px 13px rgba(25, 118, 210, 0.45);
+            opacity: 0.9;
+        }
+
+        footer {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 13px;
+            color: #37474f;
+            animation: fadeIn 0.8s ease-out 0.4s both;
+        }
+
+        footer img {
+            width: 26px;
+            vertical-align: middle;
+            border-radius: 4px;
+            margin-left: 6px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        footer img:hover {
+            transform: translateY(-2px) scale(1.15);
+            box-shadow: 0 6px 14px rgba(25, 118, 210, 0.6);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        /* 🚀 FULLSCREEN ROCKET OVERLAY */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at top, #0d47a1 0, #000022 55%, #000000 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            color: #e3f2fd;
+            text-align: center;
+        }
+
+        .overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .rocket-wrap {
+            position: relative;
+            width: 120px;
+            height: 220px;
+            margin-bottom: 18px;
+        }
+
+        .rocket {
+            font-size: 64px;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .rocket.animate {
+            animation: rocketLaunch 1.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+        }
+
+        @keyframes rocketLaunch {
+            0%   { transform: translate(-50%, 0) scale(1); opacity: 1; }
+            60%  { transform: translate(-50%, -160px) scale(1.05); }
+            100% { transform: translate(-50%, -260px) scale(0.9); opacity: 0; }
+        }
+
+        .smoke {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0, rgba(255,255,255,0) 70%);
+            filter: blur(2px);
+            opacity: 0.9;
+            animation: smokePuff 1.6s ease-out infinite;
+        }
+
+        @keyframes smokePuff {
+            0%   { transform: translate(-50%, 0) scale(1); opacity: 0.9; }
+            80%  { transform: translate(-50%, -18px) scale(1.4); opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        .overlay-title {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .overlay-text {
+            font-size: 14px;
+            color: #bbdefb;
+        }
+
+        .overlay-sub {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #90caf9;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Open All Links</h1>
+        <p class="subtitle">Paste links → Open all in new tabs</p>
+
+        <label for="links">Links</label>
+        <textarea id="links" placeholder="https://example.com
+https://example.com/file2
+https://example.com/file3"></textarea>
+        <div class="hint">Tip: Put one link per line.</div>
+
+        <div class="actions">
+            <div class="count-text">
+                Links: <span id="linkCount" class="count-number">0</span>
+            </div>
+            <button class="btn" onclick="openLinks()">
+                <span class="icon">🚀</span>
+                <span>Open Links</span>
+            </button>
+        </div>
+
+        <footer>
+            © 2025 Created by <b>Kumar Verma</b>
+            <a href="https://www.linkedin.com/in/kumar-verma2002/" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn">
+            </a>
+        </footer>
+    </div>
+
+    <!-- 🚀 Launch overlay -->
+    <div id="launchOverlay" class="overlay">
+        <div class="rocket-wrap">
+            <div class="rocket" id="rocket">🚀</div>
+            <div class="smoke"></div>
+        </div>
+        <div class="overlay-title">Launching your links...</div>
+        <div class="overlay-text" id="overlayText">
+            Please fasten your tabs. We are going to the PDF galaxy. 😄
+        </div>
+        <div class="overlay-sub">(If nothing opens, check your browser popup blocker.)</div>
+    </div>
+
+    <script>
+        const textarea    = document.getElementById('links');
+        const countSpan   = document.getElementById('linkCount');
+        const overlay     = document.getElementById('launchOverlay');
+        const rocket      = document.getElementById('rocket');
+        const overlayText = document.getElementById('overlayText');
+
+        const funnyLines = [
+            "Please fasten your tabs. We are going to the PDF galaxy. 🚀😄",
+            "Launching links at light-speed... Hold tight! 🌌",
+            "Browser might scream — You asked for too many tabs 💥😂",
+            "Captain Kumar Verma sending links to outer space 🧑‍🚀✨",
+            "Preparing hyper-jump — PDF universe ahead! 📡"
+        ];
+
+        function getUrls() {
+            return textarea.value
+                .split('\n')
+                .map(u => u.trim())
+                .filter(Boolean);
+        }
+
+        function updateCount() {
+            const urls = getUrls();
+            countSpan.textContent = urls.length;
+        }
+        textarea.addEventListener('input', updateCount);
+
+        function openUrlsInTabs(urls) {
+            urls.forEach(url => {
+                const finalUrl = /^https?:\/\//i.test(url) ? url : "https://" + url;
+                window.open(finalUrl, "_blank");
+            });
+        }
+
+        function openLinks() {
+            const urls = getUrls();
+
+            if (urls.length === 0) {
+                alert("Please paste some links first.");
+                return;
+            }
+
+            // 1–10 links → direct open, no rocket
+            if (urls.length <= 10) {
+                openUrlsInTabs(urls);
+                return;
+            }
+
+            // More than 10 links → show rocket + delay
+            overlayText.textContent = funnyLines[Math.floor(Math.random() * funnyLines.length)];
+            overlay.classList.add('show');
+
+            // restart rocket animation
+            rocket.classList.remove('animate');
+            void rocket.offsetWidth;
+            rocket.classList.add('animate');
+
+            // wait ~3s to read text, then open all links
+            setTimeout(() => {
+                openUrlsInTabs(urls);
+
+                // hide overlay after 2s more
+                setTimeout(() => {
+                    overlay.classList.remove('show');
+                }, 2000);
+
+            }, 3000);
+        }
+
+        // initial count
+        updateCount();
+    </script>
+</body>
+</html>
